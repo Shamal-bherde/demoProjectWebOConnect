@@ -122,71 +122,28 @@ export default function Register() {
       formData.append('date', date);
       formData.append('status', status);
 
-      console.log(formData);
-      // const response = await axios.post('http://localhost:8081/api/register', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // });
+      const responseData = await fetch('http://localhost:8081/api/register', {
+        method: 'POST',
+        body: formData,
+       
+      });
 
-      // console.log(response);
-      // const id = response.data.insertId ; 
-      // localStorage.setItem("user", JSON.stringify(response.data.insertId));
-         
-      // setMessage('User created successfully.');
-      // toast(`User created successfully 🦄`, {
-      //   theme: "dark",
-      //   position: "bottom-right",
-      // });
-      // if(response.status === 201)
-      // navigate(`/Profile/${id}`);
-      // else
-      // navigate("/Register");
-
-  //   } catch (error) {
-  //     setMessage('Error creating user.');
-  //     generateError(error);
-  //   }
-  // };
-
-  const config = {
-    headers: {
-      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-    },
-  };
-
-    const requestOptions = {
-      method: 'POST',
-      body: formData,
-      headers: config.headers,
-    };
-
-    // Fetch the data from the server
-    const response = await fetch('http://localhost:8081/api/register', requestOptions);
-
-    console.log(response);
-
-    // Convert the response to JSON
-    const responseData = await response.json();
-
-    console.log(responseData);
-   
-    // // Use axios to handle the response
-    const axiosResponse = await axios.post('http://localhost:8081/api/register', responseData);
-
-    console.log(axiosResponse);
-
-    const id = responseData.id;
-    localStorage.setItem("userId" ,JSON.stringify(id));
-
-    if(id !== undefined)
-    navigate(`/Profile/${id}`);
-
-    // Handle the rest of the logic...
+     try{
+      const data = await responseData.json();
+      console.log(data); 
+      const id = data.id;
+      console.log(id);
+      localStorage.setItem("userId",id);
+      navigate(`/Profile/${id}`);
+     }
+     catch{
+      console.log("idiot");
+     }
+    
   } catch (error) {
+    console.log(error.message);
     setMessage('Error creating user.');
-    generateError(error);
-  
+    generateError(error);  
   }
 }
 };

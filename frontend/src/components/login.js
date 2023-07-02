@@ -66,13 +66,12 @@ export default function Login() {
         { withCredentials: true }
       );
 
-      const id = response.data[0].id;
+      // console.log(response.data.id);
+      const id = response.data.id;
       
       if(id !== undefined)
       {
-       localStorage.getItem("user", JSON.stringify(id));
-         
-     
+       localStorage.getItem("user", JSON.stringify(id));     
             
       navigate(`/Profile/${id}`);
       }

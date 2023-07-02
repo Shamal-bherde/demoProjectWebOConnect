@@ -9,8 +9,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {  Modal } from "react-bootstrap";
 import EditIcon from '@mui/icons-material/Edit';
 import Paper from '@mui/material/Paper';
@@ -35,19 +33,7 @@ export default function DisplayUsers()  {
 
     const navigate = useNavigate(); 
 
-    useEffect(() => {
-      fetchUsers();
-    }, [search, sort, page, limit]);
-  
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers({ search, sort, page, limit });
-        setUsers(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
+ 
     const generateError = (error) =>
     {
     toast.error(error?.response?.data?.message, {
@@ -68,6 +54,21 @@ export default function DisplayUsers()  {
   
     const handleLimitChange = (e) => {
       setLimit(parseInt(e.target.value));
+    };
+
+    useEffect(() => {
+      fetchUsers();
+    }, [search, sort, page, limit]);
+  
+    const fetchUsers = async () => {
+      try {
+        const response = await getUsers({ search, sort, page, limit });
+      
+        const usersArray = response.data;
+        setUsers(usersArray);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
       const handleEdit = (user) => {
@@ -177,6 +178,7 @@ export default function DisplayUsers()  {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                 <TableRow>
+                <TableCell align="center"><b>Id</b></TableCell>
                     
                     <TableCell align="center"><b>Profile</b></TableCell>
                     <TableCell align="center"><b>Name</b></TableCell>
@@ -193,13 +195,15 @@ export default function DisplayUsers()  {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {users.map((user) => (
+                {users && users.map((user) => (
+              
                     <TableRow
                     key={user.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
+                    <TableCell align="center">{user.id}</TableCell>                   
                     
-                    {/* <TableCell align="center"><Avatar alt="Profile Pic" src={`http://localhost:3000/uploads/${user.profilepic}`} /></TableCell> */}
+                    <TableCell align="center"><Avatar alt="Profile Pic" src={`http://localhost:3000/uploads/${user.profilepic}`} /></TableCell>
                     <TableCell align="center">{user.name}</TableCell>                   
                     <TableCell align="center">{user.email}</TableCell>
                     <TableCell align="center">{user.gender}</TableCell>

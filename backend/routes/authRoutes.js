@@ -1,9 +1,7 @@
 const {
   registerWithUpload,
     login,
-    profile,
     deleteUser,
-    editUser,
     fetchUser,
     logout,
     editUserUpload,
@@ -15,7 +13,6 @@ const {
   
   router.post("/api/register", registerWithUpload);
   router.post("/api/login", login);
-  router.get("/api/profile", profile);
   router.post("/api/editUser/:id", editUserUpload);
   router.post("/api/editStatus/:id", editStatus);
   router.post("/api/deleteUser/:id" ,  deleteUser);

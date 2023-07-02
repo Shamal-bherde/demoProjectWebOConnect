@@ -20,10 +20,9 @@ import axios from "axios";
 export default function MyProfile() {
 
   const navigate = useNavigate();
-    const [sidebar, setSidebar] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
   const showSidebar = () => setSidebar(!sidebar);
   const [showModal, setShowModal] = useState(false);
-
 
   const { id } = useParams(); // Access the userID from the route parameter
 
@@ -40,9 +39,10 @@ export default function MyProfile() {
       if (response.ok) {
         
       const user = await response.json();
+
       // Convert the date to a human-readable form
       user.date = new Date(user.date).toLocaleDateString();
-      setUserDetails(user);
+       setUserDetails(user);
     
         toast(`See Your Profile 🦄`, {
           theme: "dark",

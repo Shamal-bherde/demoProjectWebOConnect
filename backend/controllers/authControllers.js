@@ -4,8 +4,8 @@ const { uploadMiddleware } = require('../middleware/uploadMiddleware');
 
 // Function to check if email already exists in the database
 async function checkEmailExists(email) {
-  const count = await UserDetails.count({ where: { email } });
-  return count > 0;
+  const user = await UserDetails.findOne({ where: { email } });
+  return user !== null;
 }
 
 module.exports.register = async (req, res) => {
@@ -36,8 +36,9 @@ module.exports.register = async (req, res) => {
                             status: 'pending',
                           });
 
-    res.status(200).send(response);
+   return res.status(200).send(response);
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error: error.message });
   }
 };
@@ -62,35 +63,6 @@ module.exports.login = async (req, res) => {
     } else {
       res.status(401).send({ message: 'Invalid credentials' });
     }
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-};
-
-module.exports.profile = async (req, res) => {
-  const { page, limit } = req.query;
-
-  const pageNumber = parseInt(page) || 1; // Convert the page number to an integer (default: 1)
-  const limitNumber = parseInt(limit) || 10; // Convert the limit to an integer (default: 10)
-
-  const startIndex = (pageNumber - 1) * limitNumber; // Calculate the starting index for pagination
-  const endIndex = pageNumber * limitNumber; // Calculate the ending index for pagination
-
-  try {
-    const totalCount = await UserDetails.count(); // Get the total count of user details
-
-    const users = await UserDetails.findAll({
-      offset: startIndex,
-      limit: limitNumber,
-    }); // Get paginated user details
-
-    const paginatedResults = users.slice(startIndex, endIndex); // Get the results for the current page
-
-    res.send({
-      currentPage: pageNumber,
-      totalPages: Math.ceil(totalCount / limitNumber),
-      data: paginatedResults,
-    });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
@@ -169,26 +141,19 @@ module.exports.editStatus = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const { status } = req.body;
+    
+    const status = "active";
 
-    // Check if any required fields are missing
-    if (!status) {
-      return res.status(400).send({ message: 'Missing required fields' });
+    // Update the status using Sequelize
+    const [affectedRows] = await UserDetails.update({ status }, { where: { id } });
+
+    if (affectedRows === 0) {
+      return res.status(404).send({ message: "User not found" });
     }
 
-    const user = await UserDetails.findByPk(id);
-
-    if (!user) {
-      return res.status(404).send({ message: 'User not found' });
-    }
-
-    user.status = status;
-
-    await user.save();
-
-    res.status(200).send({ message: 'Status updated successfully' });
+    return res.status(200).send({ message: "Status updated successfully" });
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    return res.send({ message: error.message });
   }
 };
 

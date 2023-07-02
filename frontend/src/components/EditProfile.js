@@ -46,6 +46,7 @@ const defaultTheme = createTheme();
   const [passwordError, setPasswordError] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
+
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     setProfilePic(file);
@@ -107,7 +108,7 @@ const defaultTheme = createTheme();
       formData.append('email', email);
       formData.append('phone', phone);
       formData.append('password', password);
-      formData.append('profilepic', profilePic);
+      formData.append('profilePic', profilePic);
 
       console.log(formData,"FORM");
       
