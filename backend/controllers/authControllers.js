@@ -58,7 +58,8 @@ module.exports.login = async (req, res) => {
 
     if (user) {
       req.session.userId = user.id;
-      res.cookie('sessionId', req.session.id); // Set the session ID as a cookie
+      
+      res.cookie('sessionId', req.session.userId); // Set the session ID as a cookie
       res.status(200).send(user);
     } else {
       res.status(401).send({ message: 'Invalid credentials' });

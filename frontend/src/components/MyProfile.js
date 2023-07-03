@@ -58,7 +58,7 @@ export default function MyProfile() {
   };
 
   if (!userDetails) {
-    return <div>Record Not Exists</div>;
+    return <div>Loading....</div>;
   }
 
     // Define a function to get the status color based on its value

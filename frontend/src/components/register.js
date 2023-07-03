@@ -137,7 +137,7 @@ export default function Register() {
       navigate(`/Profile/${id}`);
      }
      catch{
-      console.log("idiot");
+      console.log("Check Record");
      }
     
   } catch (error) {

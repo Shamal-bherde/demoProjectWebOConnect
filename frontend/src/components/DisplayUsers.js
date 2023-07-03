@@ -19,6 +19,8 @@ import Button from '@mui/material/Button';
 import { useNavigate, Link } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CSVLink } from 'react-csv';
+import DownloadIcon from '@mui/icons-material/Download';
 
 export default function DisplayUsers()  {
     const [users, setUsers] = useState([]);
@@ -42,6 +44,7 @@ export default function DisplayUsers()  {
   
     const handleSearchChange = (e) => {
       setSearch(e.target.value);
+      setPage(1);
     };
   
     const handleSortChange = (e) => {
@@ -57,19 +60,35 @@ export default function DisplayUsers()  {
     };
 
     useEffect(() => {
+
+      const fetchUsers = async () => {
+        try {
+          const response = await getUsers({ search, sort, page, limit });
+        
+          console.log(response.data);
+          const usersArray = response.data;
+          setUsers(usersArray);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
       fetchUsers();
     }, [search, sort, page, limit]);
   
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers({ search, sort, page, limit });
-      
-        const usersArray = response.data;
-        setUsers(usersArray);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+   
+
+    const csvData = users.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      gender: user.gender,
+      password: user.password,
+      date: user.date,
+      status: user.status
+    }));
+    
+    
 
       const handleEdit = (user) => {
         setEditUserId(user.id);
@@ -139,6 +158,8 @@ export default function DisplayUsers()  {
             {/* Sort */}
             <select value={sort} onChange={handleSortChange}>
             <option value="" >Sort By</option>
+            <option value="id:asc">Id (Ascending)</option>
+          <option value="id:desc">Id (Descending)</option>
             <option value="name:asc">Name (Ascending)</option>
             <option value="name:desc">Name (Descending)</option>
             <option value="email:asc">Email (Ascending)</option>
@@ -152,7 +173,7 @@ export default function DisplayUsers()  {
             {/* Pagination */}
             <div>
             <label>Page</label>
-            <input type="number" value={page} onChange={handlePageChange} min="1" />
+            <input type="number" value={page} onChange={handlePageChange} min="1" max="100" />
             </div>
             
         </Typography>
@@ -169,11 +190,15 @@ export default function DisplayUsers()  {
         
         {/* Search */}
 
-        <input type="text" value={search} onChange={handleSearchChange} placeholder="Search" />  
+        {/* <input type="text" value={search} onChange={handleSearchChange} placeholder="Search" />   */}
+
+                     
+                    
+                    
 		</Toolbar>
 
 	    </AppBar>  
-
+      {users && users.length > 0 ? (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -190,12 +215,14 @@ export default function DisplayUsers()  {
                     <TableCell align="center">
                     <b>  
                        Action
+                      
                         </b>
                     </TableCell>
+                 
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {users && users.map((user) => (
+                {users && users?.map((user) => (
               
                     <TableRow
                     key={user.id}
@@ -217,7 +244,11 @@ export default function DisplayUsers()  {
                     <TableCell align="center">
                       
                         <Button color='secondary' onClick={() => handleEdit(user)}><EditIcon /></Button> 
-                                              
+                        <CSVLink color='primary' data={csvData} filename="users.csv"><DownloadIcon />  </CSVLink>
+                         
+                    </TableCell>
+                    <TableCell align="center">
+                     
                     </TableCell>
                     
                          {/* Confirmation Modal for Edit*/}
@@ -247,11 +278,19 @@ export default function DisplayUsers()  {
                             </Button>
                         </Modal.Footer>
                         </Modal>
+
                     </TableRow>
+
+
                 ))}
+
                 </TableBody>
             </Table>
+
             </TableContainer>
+             ) : (
+              <p>Loading</p>
+            )}
       </div>
     );
   }
