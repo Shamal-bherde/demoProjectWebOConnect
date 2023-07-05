@@ -101,6 +101,7 @@ const defaultTheme = createTheme();
       isValid = false;
     }
   
+    if(isValid){
     try {
       
       const formData = new FormData();
@@ -136,7 +137,7 @@ const defaultTheme = createTheme();
       generateError(error);
     }
   };
-
+  }
  
 return (
     <>

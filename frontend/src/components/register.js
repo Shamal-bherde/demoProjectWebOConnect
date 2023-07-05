@@ -1,4 +1,4 @@
-import React , {useState , useRef} from 'react';
+import React , {useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -42,10 +42,24 @@ export default function Register() {
   const [phoneError, setPhoneError] = useState('');
   const [dateError, setDateError] = useState('');
   const [genderError, setGenderError] = useState('');
+  const [profilePicError, setProfilePicError] = useState('');
+
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     setProfilePic(file);
+
+     // Validate image here (e.g., file type, size)
+     if (!validateImageType(file)) {
+      setProfilePicError('Invalid file type. Only images are allowed.');
+    } else {
+      setProfilePicError('');
+    }
+  };
+
+  const validateImageType = (file) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    return allowedTypes.includes(file.type);
   };
 
   const generateError = (error) =>
@@ -107,6 +121,12 @@ export default function Register() {
     if (gender.trim() === '') {
       setGenderError('Gender is required');
       isValid = false;
+    }
+
+     // Check if there is an error with the profile picture
+     if (profilePicError !== '') {
+      toast.error(profilePicError, { position: 'bottom-right' });
+      return;
     }
 
     if (isValid)

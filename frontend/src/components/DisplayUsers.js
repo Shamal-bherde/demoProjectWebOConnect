@@ -32,6 +32,7 @@ export default function DisplayUsers()  {
     const [editUserId, setEditUserId] = useState(null);
     const [editStatus, setEditStatus] = useState('');
     const [statusError, setStatusError] = useState('');
+    // const [filteredUsers, setFilteredUsers] = useState([]);
 
     const navigate = useNavigate(); 
 
@@ -60,24 +61,22 @@ export default function DisplayUsers()  {
     };
 
     useEffect(() => {
-
       const fetchUsers = async () => {
         try {
           const response = await getUsers({ search, sort, page, limit });
-        
-          console.log(response.data);
-          const usersArray = response.data;
+          console.log("API URL:", response); // Log the URL
+    
+          const usersArray = response.data || []; 
           setUsers(usersArray);
         } catch (error) {
           console.error(error);
         }
       };
-
+  
       fetchUsers();
     }, [search, sort, page, limit]);
   
    
-
     const csvData = users.map(user => ({
       id: user.id,
       name: user.name,
@@ -88,13 +87,12 @@ export default function DisplayUsers()  {
       status: user.status
     }));
     
-    
 
-      const handleEdit = (user) => {
-        setEditUserId(user.id);
-        setEditStatus(user.status);
-        setShowModal(true);
-      };
+    const handleEdit = (user) => {
+      setEditUserId(user.id);
+      setEditStatus(user.status);
+      setShowModal(true);
+    };
 
          // Define a function to get the status color based on its value
     const getStatusColor = (status) => {
@@ -110,37 +108,37 @@ export default function DisplayUsers()  {
         }
       };
     
-      const handleSubmit = async () => {
-        if (editStatus.trim() === '') {
-          setStatusError('Status is required');
-          return;
-        }
-    
-        try {
-          const formData = new FormData();
-          formData.append('status', editStatus);
-    
-          const response = await axios.post(
-            `http://localhost:8081/api/editStatus/${editUserId}`,
-            formData
-          );
-    
-          console.log(response);
-    
-          alert('User Updated successfully.');
-          toast(response.data.message, {
-            theme: "dark",
-            position: "bottom-right",
-          });
-    
-          navigate(`/AllUsers`);
-        } catch (error) {
-          console.log('Error editing user.', error.message);
-          generateError(error);
-        }
-    
-        setShowModal(false);
-      };
+    const handleSubmit = async () => {
+      if (editStatus.trim() === '') {
+        setStatusError('Status is required');
+        return;
+      }
+  
+      try {
+        const formData = new FormData();
+        formData.append('status', editStatus);
+  
+        const response = await axios.post(
+          `http://localhost:8081/api/editStatus/${editUserId}`,
+          formData
+        );
+  
+        console.log(response);
+  
+        alert('User Updated successfully.');
+        toast(response.data.message, {
+          theme: "dark",
+          position: "bottom-right",
+        });
+  
+        navigate(`/AllUsers`);
+      } catch (error) {
+        console.log('Error editing user.', error.message);
+        generateError(error);
+      }
+  
+      setShowModal(false);
+    };
     
     return (
       <div>
@@ -188,9 +186,9 @@ export default function DisplayUsers()  {
         </Typography>
 
         
-        {/* Search */}
+        {/* Search
 
-        {/* <input type="text" value={search} onChange={handleSearchChange} placeholder="Search" />   */}
+        <input type="text" value={search} onChange={handleSearchChange} placeholder="Search" />   */}
 
                      
                     
@@ -198,7 +196,7 @@ export default function DisplayUsers()  {
 		</Toolbar>
 
 	    </AppBar>  
-      {users && users.length > 0 ? (
+      {users ? (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -222,7 +220,7 @@ export default function DisplayUsers()  {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {users && users?.map((user) => (
+                {Array.isArray(users) && users?.map((user) => (
               
                     <TableRow
                     key={user.id}
@@ -289,7 +287,8 @@ export default function DisplayUsers()  {
 
             </TableContainer>
              ) : (
-              <p>Loading</p>
+             
+              null
             )}
       </div>
     );
